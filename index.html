@@ -61,12 +61,6 @@
     transform:translateX(-50%);font-size:12px;line-height:1.55;letter-spacing:.08em;text-align:center;
     color:rgba(255,255,255,.92);pointer-events:none;z-index:39;transition:opacity .2s;}
   #hint[data-kind="idle"]{font-size:11px;letter-spacing:.18em;color:rgba(255,255,255,.58);}
-  #hint[data-links="true"]{bottom:46px;}
-  #drawerLinks{position:fixed;left:50%;bottom:22px;z-index:39;display:flex;gap:14px;
-    transform:translateX(-50%);font-size:10px;letter-spacing:.2em;}
-  #drawerLinks[hidden]{display:none;}
-  #drawerLinks a{color:rgba(255,255,255,.8);text-underline-offset:4px;text-decoration-thickness:1px;}
-  #drawerLinks a:hover,#drawerLinks a:focus-visible{color:#fff;outline:none;}
   #flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:40;}
   #legionScreenLayer{position:fixed;inset:0;z-index:9;pointer-events:none;opacity:0;visibility:hidden;}
   #legionScreenLayer.active{opacity:1;visibility:visible;}
@@ -121,8 +115,6 @@
     .loader-aura{width:240px;}
     .loader-switch{width:38px;height:54px;}
     #hint{bottom:18px;width:calc(100vw - 40px);max-width:none;font-size:11px;line-height:1.5;}
-    #hint[data-links="true"]{bottom:42px;}
-    #drawerLinks{bottom:16px;}
     #layoutToggle{right:12px;top:12px;}
     #layoutPanel{right:12px;left:12px;top:52px;width:auto;max-height:calc(100vh - 70px);}
     #legionScreenLayer{display:none!important;}
@@ -141,7 +133,6 @@
 <div id="app"></div>
 <div id="title"><b>JOAN</b> · 工位 WORKSTATION</div>
 <div id="hint" role="status" aria-live="polite" aria-atomic="true" data-kind="idle">ESC 退出特写</div>
-<nav id="drawerLinks" aria-label="联系入口" hidden><a href="https://github.com/yourname" target="_blank" rel="noopener">GITHUB</a><a href="mailto:hi@example.com">MAIL</a></nav>
 <button id="layoutToggle" type="button" aria-controls="layoutPanel" aria-expanded="false">调整场景</button>
 <aside id="layoutPanel" aria-label="场景手动调整" hidden>
   <header><span>SCENE / 手动校准</span><button id="layoutClose" type="button" aria-label="关闭场景调整面板">×</button></header>
@@ -1747,7 +1738,6 @@ function unfocus(){
 }
 /* ================= UI ================= */
 const hintEl=document.getElementById('hint');
-const drawerLinksEl=document.getElementById('drawerLinks');
 const IDLE_HINT='ESC 退出特写';
 function syncNarrator(){
   const hoverKey=hovered&&!(mode==='focus'&&hovered===focusKey)?hovered:null;
@@ -1755,9 +1745,6 @@ function syncNarrator(){
   const focusDetail=mode==='focus'?interactives[focusKey]?.detail:'';
   hintEl.textContent=hoverName||focusDetail||IDLE_HINT;
   hintEl.dataset.kind=hoverName?'hover':(focusDetail?'detail':'idle');
-  const showDrawerLinks=mode==='focus'&&focusKey==='drawer'&&!hoverName;
-  hintEl.dataset.links=showDrawerLinks?'true':'false';
-  drawerLinksEl.hidden=!showDrawerLinks;
 }
 addEventListener('keydown',e=>{
   if(e.key==='Escape'&&!layoutPanelEl.hidden)setLayoutPanelOpen(false);
@@ -1845,7 +1832,6 @@ addEventListener('pointermove',e=>{
     parY=(e.clientY/innerHeight-.5)*2;
   }
   if(e.target.closest?.('#loader'))return;
-  if(e.target.closest?.('#drawerLinks')){document.body.style.cursor='pointer';return;}
   if(pdown&&mode==='orbit'){
     const dx=e.clientX-px,dy=e.clientY-py;
     moved+=Math.abs(dx)+Math.abs(dy);
@@ -1875,7 +1861,7 @@ addEventListener('pointerup',e=>{
     if(mode==='focus'&&k===focusKey){
       const it=interactives[k];if(it.act)it.act();
     }else focusOn(k);
-  }else if(mode==='focus'&&!e.target.closest('#drawerLinks'))unfocus();
+  }else if(mode==='focus')unfocus();
 });
 addEventListener('pointercancel',()=>{
   pdown=false;hovered=null;syncNarrator();setInteractionQuality(false);document.body.style.cursor='default';

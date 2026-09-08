@@ -695,7 +695,7 @@ function launch(app){
   else if(app==='breakout')openWin('breakout','BREAKOUT.EXE',breakout);
   else if(app==='claw')openWin('claw','CLAW.EXE — 抓娃娃',clawMachine,390);
   else if(app==='readme')openWin('readme','README.TXT',readme,340);
-  else if(app==='contact')openWin('contact','CONTACT.EXE — 建立连接',contact,310);
+  else if(app==='contact')openWin('contact','CONTACT.EXE',contact,310);
 }
 document.querySelectorAll('.icon').forEach(function(ic){
   ic.addEventListener('click',function(){launch(ic.dataset.app);});
