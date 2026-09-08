@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' blob: https://cdn.jsdelivr.net; worker-src blob:; frame-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>字 · 在</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;}
+  body{background:#f3f0e9;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;}
+  .b{position:fixed;left:0;top:0;font-weight:900;line-height:.92;cursor:grab;
+    user-select:none;-webkit-user-select:none;will-change:transform;color:#16161a;}
+  .b:active{cursor:grabbing;}
+  #controls{position:fixed;top:18px;right:26px;display:flex;align-items:center;gap:10px;}
+  #grav{font-size:11px;letter-spacing:.2em;color:#a9a49a;
+    cursor:pointer;border:1px solid #d8d3c8;padding:5px 12px;background:transparent;
+    font-family:inherit;}
+  #grav.on{background:#16161a;color:#f3f0e9;border-color:#16161a;}
+</style>
+</head>
+<body>
+<div id="controls">
+  <button id="grav">GRAVITY: OFF</button>
+</div>
+<script>
+const NAME='JOAN';
+const EXTRA='★?!&%#@※♥△◇✦×✧⌘⌥⎋';
+const bodies=[];
+let gravity=false;
+const stage={w:innerWidth,h:innerHeight};
+addEventListener('resize',function(){stage.w=innerWidth;stage.h=innerHeight;});
+
+// ---------- 声音 ----------
+let AC=null;
+function ac(){if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();
+  if(AC.state==='suspended')AC.resume();return AC;}
+function tone(f,d,v,type){const a=ac(),t=a.currentTime,o=a.createOscillator(),g=a.createGain();
+  o.type=type||'sine';o.frequency.value=f;
+  g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+d+.02);}
+function pop(){tone(180+Math.random()*240,.12,.25,'sine');}
+let lastK=0;
+function knock(){if(!AC)return;
+  const n=performance.now();if(n-lastK<70)return;lastK=n;
+  tone(90+Math.random()*60,.06,.1,'square');}
+
+// ---------- 物理体 ----------
+function makeBody(ch,size,x,y,accent,extra){
+  const el=document.createElement('div');el.className='b';el.textContent=ch;
+  el.style.fontSize=size+'px';
+  if(accent)el.style.color='#ff4b1f';
+  document.body.appendChild(el);
+  const r=el.getBoundingClientRect();
+  const b={el:el,w:r.width,h:r.height,x:x,y:y,vx:0,vy:0,
+    rot:(Math.random()-.5)*8,vr:(Math.random()-.5)*20,sq:0,drag:false,extra:!!extra};
+  el._b=b;bodies.push(b);draw(b);
+  return b;
+}
+function draw(b){
+  let t='translate3d('+b.x+'px,'+b.y+'px,0) rotate('+b.rot+'deg)';
+  if(b.sq>.01)t+=' scale('+(1+b.sq*.35)+','+(1-b.sq*.3)+')';
+  b.el.style.transform=t;
+}
+let didLayout=false;
+function layout(){
+  stage.w=innerWidth;stage.h=innerHeight;
+  if(stage.w<60||stage.h<60)return;
+  didLayout=true;
+  bodies.splice(0).forEach(function(b){b.el.remove();});
+  const size=Math.min(stage.w,stage.h)*.30;
+  const accentIdx=Math.floor(Math.random()*NAME.length);
+  const tmp=[];let total=0;
+  for(let i=0;i<NAME.length;i++){
+    const b=makeBody(NAME[i],size,0,0,i===accentIdx,false);
+    tmp.push(b);total+=b.w;}
+  const gap=size*.06;total+=gap*(NAME.length-1);
+  let x=(stage.w-total)/2;
+  const y=(stage.h-tmp[0].h)/2;
+  tmp.forEach(function(b){b.x=x;b.y=y;x+=b.w+gap;draw(b);});
+}
+layout();
+
+// ---------- 物理模拟 ----------
+function step(dt){
+  for(let i=0;i<bodies.length;i++){const b=bodies[i];
+    b.sq*=Math.exp(-10*dt);
+    if(b.drag)continue;
+    if(gravity){b.vy+=2600*dt;}
+    else{
+      const damp=Math.exp(-.5*dt);b.vx*=damp;b.vy*=damp;
+      if(Math.hypot(b.vx,b.vy)<15){b.vx+=(Math.random()-.5)*6;b.vy+=(Math.random()-.5)*6;}
+    }
+    b.x+=b.vx*dt;b.y+=b.vy*dt;b.rot+=b.vr*dt;
+    b.vr*=Math.exp(-.4*dt);
+    const e=.78;
+    if(b.x<0){b.x=0;if(b.vx<0){b.vx=-b.vx*e;b.vr+=(Math.random()-.5)*60;knock();}}
+    if(b.x+b.w>stage.w){b.x=stage.w-b.w;if(b.vx>0){b.vx=-b.vx*e;b.vr+=(Math.random()-.5)*60;knock();}}
+    if(b.y<0){b.y=0;if(b.vy<0)b.vy=-b.vy*e;}
+    if(b.y+b.h>stage.h){b.y=stage.h-b.h;
+      if(b.vy>0){
+        if(Math.abs(b.vy)>140){b.vy=-b.vy*(gravity?.42:e);knock();}
+        else b.vy=0;}
+      if(gravity){b.vx*=Math.exp(-3*dt);b.vr*=Math.exp(-3*dt);}}
+  }
+  for(let i=0;i<bodies.length;i++)for(let j=i+1;j<bodies.length;j++){
+    const A=bodies[i],B=bodies[j];
+    const ra=Math.min(A.w,A.h)*.42,rb=Math.min(B.w,B.h)*.42;
+    const ax=A.x+A.w/2,ay=A.y+A.h/2,bx=B.x+B.w/2,by=B.y+B.h/2;
+    let dx=bx-ax,dy=by-ay;
+    const d=Math.hypot(dx,dy)||.01,min=ra+rb;
+    if(d>=min)continue;
+    dx/=d;dy/=d;
+    const push=(min-d)/2;
+    if(!A.drag){A.x-=dx*push;A.y-=dy*push;}
+    if(!B.drag){B.x+=dx*push;B.y+=dy*push;}
+    const rel=(B.vx-A.vx)*dx+(B.vy-A.vy)*dy;
+    if(rel<0){
+      const imp=-rel*.46;
+      if(!A.drag){A.vx-=dx*imp;A.vy-=dy*imp;A.vr+=(Math.random()-.5)*50;}
+      if(!B.drag){B.vx+=dx*imp;B.vy+=dy*imp;B.vr+=(Math.random()-.5)*50;}
+      if(imp>120)knock();
+    }
+  }
+}
+let last=performance.now();
+function frame(now){
+  const dt=Math.min(.033,(now-last)/1000);last=now;
+  if(!didLayout)layout();
+  step(dt);
+  for(let i=0;i<bodies.length;i++)draw(bodies[i]);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+// ---------- 拖拽 / 投掷 / 戳 ----------
+let drag=null,hist=[];
+document.addEventListener('pointerdown',function(e){
+  const el=e.target.closest('.b');if(!el)return;
+  ac();
+  const b=el._b;b.drag=true;b.vx=b.vy=0;
+  drag={b:b,ox:e.clientX-b.x,oy:e.clientY-b.y,t:performance.now(),moved:0};
+  hist=[[performance.now(),e.clientX,e.clientY]];
+});
+document.addEventListener('pointermove',function(e){
+  if(!drag)return;
+  const b=drag.b,now=performance.now(),lastH=hist[hist.length-1];
+  drag.moved+=Math.hypot(e.clientX-lastH[1],e.clientY-lastH[2]);
+  b.x=e.clientX-drag.ox;b.y=e.clientY-drag.oy;
+  hist.push([now,e.clientX,e.clientY]);
+  if(hist.length>6)hist.shift();
+});
+document.addEventListener('pointerup',function(e){
+  if(!drag)return;
+  const b=drag.b;b.drag=false;
+  const now=performance.now();
+  if(drag.moved<7&&now-drag.t<350){b.sq=1;pop();}
+  else if(hist.length>1){
+    const h0=hist[0],h1=hist[hist.length-1];
+    const dt=Math.max(16,h1[0]-h0[0]);
+    b.vx=Math.max(-2600,Math.min(2600,(h1[1]-h0[1])/dt*1000));
+    b.vy=Math.max(-2600,Math.min(2600,(h1[2]-h0[2])/dt*1000));
+    b.vr=(Math.random()-.5)*120;
+  }
+  drag=null;
+});
+
+// 双击空白 → 生成怪字
+document.addEventListener('dblclick',function(e){
+  if(e.target.closest('.b')||e.target.closest('#controls'))return;
+  const ch=EXTRA[Math.floor(Math.random()*EXTRA.length)];
+  const size=Math.min(stage.w,stage.h)*(.07+Math.random()*.12);
+  const b=makeBody(ch,size,e.clientX,e.clientY,Math.random()<.3,true);
+  b.x-=b.w/2;b.y-=b.h/2;
+  b.vy=-200-Math.random()*300;b.vx=(Math.random()-.5)*400;
+  draw(b);
+  const extras=bodies.filter(function(x){return x.extra;});
+  if(extras.length>10){
+    const old=extras[0];old.el.remove();bodies.splice(bodies.indexOf(old),1);}
+  pop();
+});
+
+// ---------- 重力开关 / 重置 ----------
+const gravEl=document.getElementById('grav');
+function setG(v){gravity=v;
+  gravEl.textContent='GRAVITY: '+(v?'ON':'OFF');
+  gravEl.classList.toggle('on',v);}
+gravEl.addEventListener('click',function(){setG(!gravity);ac();});
+addEventListener('keydown',function(e){
+  const k=e.key.toLowerCase();
+  if(k==='g')setG(!gravity);
+  if(k==='r'){setG(false);layout();}
+});
+
+</script>
+</body>
+</html>
