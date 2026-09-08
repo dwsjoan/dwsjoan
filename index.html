@@ -1645,6 +1645,8 @@ addHit('cabinetUpper','上层柜门',[-.90,1.195,.31],[.90,1.29,.08],
 addHit('cabinetLower','下层柜门',[-.90,.29,.31],[.90,.47,.08],
   {pos:[-.90,.42,1.25],look:[-.90,.29,.31]},
   '打不开+2',null);
+// 鼠标垫只遮挡其后物件，不显示提示、不聚焦，也不触发点击动作。
+interactives.mousepad={label:'',focus:null,detail:'',act:null,passive:true};
 const FUTURE_AREA_KEY='futureArea';
 interactives[FUTURE_AREA_KEY]={
   label:'光线这么暗，聚焦到那也看不清楚啦',focus:null,detail:'',act:null,passive:true
@@ -1777,7 +1779,7 @@ const directSurfaceInteractions=[
 const directSurfaceAssetKeys=new Set(directSurfaceInteractions.map(([,assetKey])=>assetKey));
 const surfaceInteractions=[...directSurfaceInteractions,
   ...ASSET_LAYOUT.filter(spec=>spec.key!=='cabinet'&&!directSurfaceAssetKeys.has(spec.key))
-    .map(spec=>[FUTURE_AREA_KEY,spec.key])
+    .map(spec=>[spec.key==='mousepad'?'mousepad':FUTURE_AREA_KEY,spec.key])
 ];
 const directSurfaceAssetByKey=Object.fromEntries(directSurfaceInteractions);
 const cabinetRegionKeys=new Set(['drawer','cabinetUpper','cabinetLower']);
