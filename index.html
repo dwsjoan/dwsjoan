@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>JOAN_OS</title>
+<style>
+:root{--bg:#0c0c13;--win:#14141d;--edge:#3c3c52;--txt:#c8d0c8;--grn:#7dffa0;--amb:#ffb454;--sel:#23233a;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{background-color:var(--bg);background-image:url('assets/wallpapers/legion-crt-cat-wallpaper-v2.png');
+  background-position:70% 50%;background-size:cover;background-repeat:no-repeat;
+  color:var(--txt);font:14px/1.55 "Courier New",ui-monospace,monospace;
+  overflow:hidden;user-select:none;-webkit-user-select:none;}
+#scan{position:fixed;inset:0;pointer-events:none;z-index:9000;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.25) 0 1px,transparent 1px 3px);
+  box-shadow:inset 0 0 140px rgba(0,0,0,.55);}
+#boot{position:fixed;inset:0;background:#000;z-index:9500;}
+/* 暖色磷光菜单带：浅底连续网格，纹理覆在字面上，避免粗黑边和浮雕感。 */
+#menubar{position:fixed;left:0;right:0;top:0;height:42px;z-index:9001;display:flex;align-items:center;
+  padding:0 14px 0 10px;color:#25291e;border-top:1px solid #8e8967;border-bottom:1px solid #77765a;
+  background-color:#e0d4a2;
+  background-image:repeating-linear-gradient(0deg,rgba(48,53,36,.16) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(90deg,rgba(61,65,43,.14) 0 1px,rgba(255,246,199,.12) 1px 2px,transparent 2px 3px),
+    linear-gradient(180deg,#e7ddaf 0%,#ded09b 55%,#e4d8a6 100%);
+  box-shadow:inset 0 1px rgba(255,249,212,.45),0 1px 3px rgba(0,0,0,.35);
+  font-family:"PingFang SC","Courier New",monospace;font-size:18px;font-weight:500;letter-spacing:1px;
+  -webkit-font-smoothing:none;font-smooth:never;text-shadow:0 0 1px rgba(39,45,29,.28);}
+#menubar::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(224,215,167,.12) 0 1px,transparent 1px 3px);
+  box-shadow:inset 32px 0 32px -24px rgba(22,28,18,.25),inset -32px 0 32px -24px rgba(22,28,18,.25);}
+#menubar>*{position:relative;z-index:1;}
+.menu-apple{width:52px;align-self:stretch;display:grid;place-items:center;margin-right:10px;
+  font:34px/1 -apple-system,BlinkMacSystemFont,sans-serif;text-shadow:none;}
+.system-menus{display:flex;align-self:stretch;align-items:center;gap:1px;}
+.system-menu{align-self:stretch;display:flex;align-items:center;padding:0 14px;white-space:nowrap;}
+.system-menu,.menu-apple{cursor:pointer;}
+.system-menu:hover,.system-menu:focus-visible,.menu-apple:hover,.menu-apple:focus-visible{color:#e7d9a7;background:#151812;box-shadow:none;text-shadow:none;}
+.menu-status{margin-left:auto;display:flex;align-items:center;gap:12px;white-space:nowrap;font-size:16px;}
+.wifi{width:21px;height:17px;display:block;stroke:currentColor;stroke-width:2.3;fill:none;stroke-linecap:square;}
+#icons{position:fixed;left:16px;top:58px;display:flex;flex-direction:column;gap:6px;}
+.icon{width:96px;padding:10px 4px;text-align:center;cursor:pointer;font-size:11px;letter-spacing:.5px;}
+.icon{color:#e0d4a2;}
+/* 透明图集四等分，保持原始纵横比，避免像素图案被拉伸。 */
+.icon .app-art{display:block;width:64px;aspect-ratio:661/595;margin:0 auto 6px;
+  background-image:url('assets/icons/joan-desktop-atlas-v1.png');background-size:200% 200%;background-repeat:no-repeat;image-rendering:pixelated;}
+.icon[data-app="music"] .app-art{background-position:0 0;}
+.icon[data-app="breakout"] .app-art{background-position:100% 0;}
+.icon[data-app="readme"] .app-art{background-position:0 100%;}
+.icon[data-app="contact"] .app-art{background-position:100% 100%;}
+.icon:hover,.icon:focus-visible{background:rgba(224,212,162,.12);outline:1px dotted #a69e76;}
+/* 窗口沿用菜单栏的暖磷光色，双线框与方形控件对应旧式桌面。 */
+.win{--win:#191e17;--edge:#a69e76;--txt:#e0d4a2;--amb:#e0d4a2;--sel:#33392a;
+  position:fixed;background:var(--win);color:var(--txt);border:3px double #d6c99a;
+  box-shadow:4px 4px 0 #10150f;min-width:230px;}
+.bar{display:flex;align-items:center;gap:10px;min-height:32px;
+  padding:4px 5px 4px 9px;background:#d8cca0;border-bottom:3px double #23291d;
+  cursor:grab;color:#23291d;letter-spacing:.5px;font:13px/1.4 "Courier New","PingFang SC",monospace;}
+.bar>span{flex-shrink:1;min-width:0;}
+.bar .x{margin-left:auto;flex:none;display:grid;place-items:center;width:22px;height:22px;padding:0;
+  border:2px solid #303725;background:#d8cca0;color:#23291d;font:20px/1 "Courier New",monospace;cursor:pointer;}
+.bar .x:hover,.bar .x:focus-visible{background:#23291d;color:#e7d9a7;border-color:#23291d;outline:1px solid #e7d9a7;}
+.wbody{padding:12px;font-size:13px;background-image:repeating-linear-gradient(90deg,rgba(223,212,164,.025) 0 1px,transparent 1px 3px);}
+.wbody a{color:#e7d9a7;text-underline-offset:3px;}
+button{font:inherit;background:var(--sel);color:var(--txt);border:1px solid var(--edge);
+  padding:3px 10px;cursor:pointer;}
+button:hover{border-color:var(--txt);color:var(--txt);}
+.win .note{color:#b3b194;}
+#w-menu-notice .wbody{display:grid;place-items:center;min-height:104px;padding:24px;
+  background-color:#d8cca0;color:#23291d;font:16px/1.6 "PingFang SC","Courier New",monospace;letter-spacing:2px;
+  background-image:repeating-linear-gradient(90deg,rgba(61,65,43,.1) 0 1px,transparent 1px 3px);}
+.seq{display:grid;grid-template-columns:52px repeat(8,26px);gap:4px;align-items:center;margin-top:10px;}
+.lbl{font-size:11px;color:var(--amb);}
+.cell{width:26px;height:26px;border:1px solid var(--edge);cursor:pointer;background:#0e0e16;}
+.cell.on{background:var(--grn);box-shadow:0 0 8px rgba(125,255,160,.5);}
+.cell.hit{border-color:var(--amb);}
+canvas{display:block;background:#08080d;image-rendering:pixelated;}
+.note{margin-top:8px;font-size:11px;color:#8a8aa0;}
+.crow{display:flex;gap:10px;margin:7px 0;align-items:baseline;}
+.crow b{width:74px;color:var(--amb);font-weight:normal;flex:none;}
+.icon[data-app="claw"] .app-art{background-image:url('assets/icons/claw-v1.png');background-size:contain;background-position:center;}
+#w-claw .wbody{padding:10px;}
+.claw-stage{width:100%;max-width:calc((100dvh - 270px)*1.125);height:auto;margin:0 auto;cursor:default;}
+.claw-message{min-height:36px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;color:#e0d4a2;}
+.claw-controls{display:grid;grid-template-columns:52px 1fr 52px;gap:8px;}
+.claw-controls kbd{display:grid;place-items:center;border:1px solid #66704e;color:#aaa988;font:16px monospace;}
+.desktop-prize{position:fixed;left:clamp(0px,var(--prize-x),calc(100vw - var(--prize-width)));z-index:8800;pointer-events:none;background:transparent;image-rendering:pixelated;}
+.desktop-prize[data-draggable]{pointer-events:auto;touch-action:none;cursor:grab;}
+.desktop-prize[data-state="dragging"]{cursor:grabbing;}
+.icon.tape-target,#w-music.tape-target{outline:2px dashed #9fc375;outline-offset:3px;}
+
+.pet-speech{position:fixed;z-index:8801;pointer-events:none;max-width:min(220px,calc(100vw - 16px));padding:9px 12px;background:#e6d6a4;color:#20281c;border:3px double #303d28;font:12px/1.6 monospace;box-shadow:3px 3px 0 #171f18;}
+.pet-speech::after{content:'';position:absolute;bottom:-7px;left:50%;width:9px;height:9px;background:#e6d6a4;border-right:1px solid #303d28;border-bottom:1px solid #303d28;transform:rotate(45deg);}
+
+.tape-recording{display:grid;gap:26px;padding:26px;cursor:pointer;max-height:calc(100dvh - 90px);overflow-y:auto;box-sizing:border-box;}
+.tape-head{display:flex;justify-content:space-between;color:#a8b582;font:11px monospace;letter-spacing:1px;}
+.tape-transcript{min-height:104px;margin:0;color:#e6d6a4;font:22px/2 monospace;white-space:pre-line;}
+.tape-options{display:grid;gap:8px;}
+.tape-options:empty{display:none;}
+.tape-options button{min-height:44px;padding:10px 12px;text-align:left;font:16px/1.6 monospace;white-space:normal;}
+.claw-controls button{min-height:42px;touch-action:none;font-size:14px;}
+.claw-controls [data-claw="grab"]{background:#d8cca0;color:#20281c;border:3px double #303d28;}
+.claw-controls button:disabled{opacity:.5;cursor:wait;}
+@media (max-width:480px){
+  body{background-position:73% 50%;}
+  #menubar{height:34px;padding:0 6px;border-width:1px 0;font-size:10px;letter-spacing:0;}
+  #menubar::after{inset:2px 0;}
+  .menu-apple{width:29px;margin-right:3px;font-size:23px;}
+  .system-menu{padding:0 5px;}
+  .menu-status{gap:4px;font-size:9px;}
+  .wifi{width:14px;height:12px;}
+  #icons{left:8px;right:8px;top:41px;flex-direction:row;gap:0;overflow-x:auto;}
+  .icon{flex:0 0 72px;width:72px;padding:5px 2px;font-size:9px;}
+  .icon .app-art{width:44px;margin-bottom:4px;}
+  .win{max-width:calc(100vw - 12px);}
+  .win canvas{max-width:100%;height:auto;}
+  .seq{grid-template-columns:44px repeat(8,minmax(0,1fr));}
+  .cell{width:100%;}
+}
+</style>
+</head>
+<body>
+<header id="menubar" aria-label="系统菜单栏">
+  <span class="menu-apple" role="button" tabindex="0" aria-label="Apple"></span>
+  <nav class="system-menus" aria-label="桌面系统菜单">
+    <span class="system-menu" role="button" tabindex="0">文件</span>
+    <span class="system-menu" role="button" tabindex="0">编辑</span>
+    <span class="system-menu" role="button" tabindex="0">显示</span>
+    <span class="system-menu" role="button" tabindex="0">窗口</span>
+    <span class="system-menu" role="button" tabindex="0">帮助</span>
+  </nav>
+  <span class="menu-status">
+    <svg class="wifi" viewBox="0 0 18 14" role="img" aria-label="Wi-Fi 已连接">
+      <path d="M1 4.5C5.7.5 12.3.5 17 4.5M4 7.5c3-2.5 7-2.5 10 0M7 10.5c1.2-1 2.8-1 4 0"/>
+      <path d="M9 13h.01" stroke-width="2.4"/>
+    </svg>
+    <time id="menuDate"></time>
+  </span>
+</header>
+<div id="icons">
+  <div class="icon" data-app="music" role="button" tabindex="0"><span class="app-art" aria-hidden="true"></span>MUSIC.EXE</div>
+  <div class="icon" data-app="breakout" role="button" tabindex="0"><span class="app-art" aria-hidden="true"></span>BREAKOUT.EXE</div>
+  <div class="icon" data-app="claw" role="button" tabindex="0"><span class="app-art" aria-hidden="true"></span>CLAW.EXE</div>
+  <div class="icon" data-app="readme" role="button" tabindex="0"><span class="app-art" aria-hidden="true"></span>README.TXT</div>
+  <div class="icon" data-app="contact" role="button" tabindex="0"><span class="app-art" aria-hidden="true"></span>CONTACT.EXE</div>
+</div>
+<div id="scan"></div>
+<div id="boot"></div>
+<script>
+// ---------- 屏幕唤醒 ----------
+// 等桌面资源就绪后从纯黑亮起；不播放终端文字，也不自动弹出窗口。
+const bootEl=document.getElementById('boot');
+addEventListener('load',()=>{
+  const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  bootEl.animate([{opacity:1},{opacity:0}],{
+    delay:160,duration:reducedMotion?1:1200,easing:'ease-out',fill:'forwards'
+  }).finished.then(()=>bootEl.remove());
+},{once:true});
+
+// ---------- 时钟 ----------
+const menuDate=document.getElementById('menuDate');
+function updateDate(){
+  const now=new Date(),week=['周日','周一','周二','周三','周四','周五','周六'];
+  menuDate.textContent=`${now.getMonth()+1}月${now.getDate()}日 ${week[now.getDay()]} ${now.toTimeString().slice(0,5)}`;
+}
+setInterval(updateDate,1000);
+updateDate();
+
+// ---------- 声音 ----------
+let AC=null;
+function ac(){if(!AC)AC=new (window.AudioContext||window.webkitAudioContext)();
+  if(AC.state==='suspended')AC.resume();return AC;}
+function env(g,t,v,d){g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);}
+function kick(){const a=ac(),t=a.currentTime,o=a.createOscillator(),g=a.createGain();
+  o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(38,t+.12);
+  env(g,t,.85,.18);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+.2);}
+function nb(a){if(!a._nb){const b=a.createBuffer(1,(a.sampleRate*.3)|0,a.sampleRate),d=b.getChannelData(0);
+  for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;a._nb=b;}return a._nb;}
+function snare(){const a=ac(),t=a.currentTime,s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();
+  s.buffer=nb(a);f.type='bandpass';f.frequency.value=1900;env(g,t,.5,.13);
+  s.connect(f);f.connect(g);g.connect(a.destination);s.start(t);s.stop(t+.15);}
+function hat(){const a=ac(),t=a.currentTime,s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();
+  s.buffer=nb(a);f.type='highpass';f.frequency.value=7500;env(g,t,.22,.05);
+  s.connect(f);f.connect(g);g.connect(a.destination);s.start(t);s.stop(t+.07);}
+const PEN=[0,3,5,7,10,12,10,7];
+function synth(step){const a=ac(),t=a.currentTime,o=a.createOscillator(),f=a.createBiquadFilter(),g=a.createGain();
+  o.type='square';o.frequency.value=110*Math.pow(2,PEN[step]/12);
+  f.type='lowpass';f.frequency.value=900;env(g,t,.3,.3);
+  o.connect(f);f.connect(g);g.connect(a.destination);o.start(t);o.stop(t+.32);}
+function blip(){const a=ac(),t=a.currentTime,o=a.createOscillator(),g=a.createGain();
+  o.type='square';o.frequency.value=500+Math.random()*500;env(g,t,.15,.07);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+.08);}
+
+// ---------- 窗口管理 ----------
+let z=20,cascade=0;
+function front(w){w.style.zIndex=++z;}
+function openWin(id,title,build,wd){
+  const ex=document.getElementById('w-'+id);if(ex){front(ex);return;}
+  const w=document.createElement('div');w.className='win';w.id='w-'+id;
+  const compact=innerWidth<=480;
+  const x=130+(cascade%6)*36,y=(compact?74:56)+(cascade%6)*(compact?18:30);cascade++;
+  w.style.left=Math.max(10,Math.min(x,innerWidth-300))+'px';w.style.top=y+'px';
+  if(wd)w.style.width=wd+'px';
+  const bar=document.createElement('div');bar.className='bar';
+  const tt=document.createElement('span');tt.textContent=title;bar.appendChild(tt);
+  const xb=document.createElement('button');xb.type='button';xb.className='x';xb.textContent='×';xb.setAttribute('aria-label','关闭窗口');
+  xb.addEventListener('pointerdown',function(e){e.stopPropagation();});
+  xb.addEventListener('click',function(){if(w._cleanup)w._cleanup();w.remove();});
+  bar.appendChild(xb);
+  const bd=document.createElement('div');bd.className='wbody';
+  w.appendChild(bar);w.appendChild(bd);
+  document.body.appendChild(w);front(w);
+  w.addEventListener('pointerdown',function(){front(w);});
+  bar.addEventListener('pointerdown',function(e){
+    const ox=e.clientX-w.offsetLeft,oy=e.clientY-w.offsetTop;
+    function mv(ev){
+      w.style.left=Math.max(-60,Math.min(innerWidth-80,ev.clientX-ox))+'px';
+      w.style.top=Math.max(0,Math.min(innerHeight-70,ev.clientY-oy))+'px';}
+    function up(){removeEventListener('pointermove',mv);removeEventListener('pointerup',up);}
+    addEventListener('pointermove',mv);addEventListener('pointerup',up);});
+  build(bd,w);
+  // 窗口的真实宽度要等内容构建后才知道；按实宽回收一次，避免窄屏右侧控件被裁掉。
+  w.style.left=Math.max(6,Math.min(w.offsetLeft,innerWidth-w.offsetWidth-6))+'px';
+}
+addEventListener('keydown',function(e){
+  if(e.key!=='Escape')return;
+  const ws=Array.prototype.slice.call(document.querySelectorAll('.win'));
+  if(!ws.length)return;
+  ws.sort(function(a,b){return (+a.style.zIndex||0)-(+b.style.zIndex||0);});
+  const w=ws.pop();if(w._cleanup)w._cleanup();w.remove();
+});
+
+// ---------- 各个应用 ----------
+const introParagraphs=['你好，我是 JOAN。'];
+function readme(bd){
+  const content=document.createElement('p');
+  content.style.cssText='margin:0;white-space:pre-line;line-height:1.9';
+  content.textContent=introParagraphs.join('\n\n');
+  bd.appendChild(content);
+}
+function contact(bd,w){
+  bd.innerHTML=
+  '<div class="crow"><b>MAIL</b><a href="mailto:2200518834@qq.com">2200518834@qq.com</a></div>'+
+  '<div style="text-align:right;margin-top:12px"></div>';
+  const ok=document.createElement('button');ok.textContent='OK';
+  ok.addEventListener('click',function(){if(w._cleanup)w._cleanup();w.remove();});
+  bd.lastChild.appendChild(ok);
+}
+function music(bd,w){
+  const ctl=document.createElement('div');
+  const btn=document.createElement('button');btn.textContent='▶ PLAY';
+  const lab=document.createElement('span');lab.className='note';
+  lab.textContent='  132 BPM · 点格子改节拍';lab.style.marginLeft='8px';
+  ctl.appendChild(btn);ctl.appendChild(lab);bd.appendChild(ctl);
+  const grid=document.createElement('div');grid.className='seq';bd.appendChild(grid);
+  const TR=[
+    {n:'KICK', p:[1,0,0,0,1,0,0,0],f:function(){kick();}},
+    {n:'SNARE',p:[0,0,1,0,0,0,1,0],f:function(){snare();}},
+    {n:'HAT',  p:[0,1,0,1,0,1,1,1],f:function(){hat();}},
+    {n:'SYNTH',p:[1,0,0,1,0,0,1,0],f:function(s){synth(s);}}];
+  const cells=[];
+  TR.forEach(function(tr,r){
+    const l=document.createElement('div');l.className='lbl';l.textContent=tr.n;grid.appendChild(l);
+    cells[r]=[];
+    tr.p.forEach(function(on,i){
+      const c=document.createElement('div');c.className='cell'+(on?' on':'');
+      c.addEventListener('pointerdown',function(){tr.p[i]=tr.p[i]?0:1;c.classList.toggle('on');ac();});
+      grid.appendChild(c);cells[r][i]=c;});
+  });
+  const st={tm:null,step:0};
+  btn.addEventListener('click',function(){
+    if(st.tm){clearInterval(st.tm);st.tm=null;btn.textContent='▶ PLAY';
+      cells.forEach(function(row){row.forEach(function(c){c.classList.remove('hit');});});return;}
+    ac();st.step=0;btn.textContent='■ STOP';
+    st.tm=setInterval(function(){
+      cells.forEach(function(row){row.forEach(function(c){c.classList.remove('hit');});});
+      cells.forEach(function(row){row[st.step].classList.add('hit');});
+      TR.forEach(function(tr){if(tr.p[st.step])tr.f(st.step);});
+      st.step=(st.step+1)%8;
+    },227);
+  });
+  w._cleanup=function(){if(st.tm)clearInterval(st.tm);};
+}
+// 磁带使用用户指定的文字彩蛋分支。
+function openTapeRecording(){
+  const existing=document.getElementById('w-music');
+  if(existing){existing._cleanup?.();existing.remove();}
+  openWin('music','MUSIC.EXE',function(bd,w){
+    bd.classList.add('tape-recording');
+    bd.tabIndex=0;bd.setAttribute('role','group');bd.setAttribute('aria-label','磁带彩蛋');
+    bd.innerHTML='<div class="tape-head"><span>JOAN / SIDE A</span></div><p class="tape-transcript" aria-live="polite"></p><div class="tape-options"></div>';
+    const transcript=bd.querySelector('.tape-transcript');
+    const options=bd.querySelector('.tape-options');
+    const pages={
+      start:{text:'恭喜你发现了这个网站的隐藏彩蛋！\n把这盘磁带抓出来，应该挺不容易的吧？',choices:[['确实，抓了好几次。','那个爪子的工作态度一直比较随意，下次我说说它。','found'],['一次就抓到了。','啊？这么容易？那我前面这句不就白准备了。','found']]},
+      found:{text:'你是怎么知道要把磁带拖到这里的？',choices:[['自己试出来的。','看起来你和做这个网站的我一样闲。','purpose'],['别人告诉我的。','你听完居然还专门来试一遍。我们俩总得有一个人去干点正事吧。','purpose'],['磁带和这里看起来就很搭。','那你很聪明哦。','purpose']]},
+      purpose:{text:'好，情况我了解了。\n所以，你本来打开电脑是准备干嘛的？',choices:[['有别的事儿。','希望正事还在原地等你，快去找它吧。','reveal'],['随便逛逛。','原来如此，欢迎你来到这里。','reveal'],['你管我。','好好好，不问了。','reveal']]},
+      reveal:{text:'好吧，根本没有什么彩蛋。\n就是想看看你会不会一直对话下来。\n居然真看到这里了，哈哈。',choices:[['有病吧！',null,'angry'],['早猜到了。',null,'calm'],['没事，我也挺闲的。',null,'calm']]},
+      angry:{text:'哦吼！',choices:[['！','好好好，不说了。','end']]},
+      calm:{text:'诶？这样吗。',choices:[['是的。',null,'end']]},
+      end:{text:'好了好了，这次真没了。',choices:[['我不信。','你看，你又点。','end'],['走了。',null,'close']]}
+    };
+    function fit(){
+      bd.scrollTop=0;
+      w.style.top=Math.max(42,Math.min(w.offsetTop,innerHeight-w.offsetHeight-8))+'px';
+    }
+    function show(id,reply){
+      if(id==='close'){w.remove();return;}
+      bd.dataset.page=id;bd.dataset.phase='choice';
+      transcript.textContent=[reply,pages[id].text].filter(Boolean).join('\n');options.replaceChildren();
+      for(const [caption,reply,next] of pages[id].choices){
+        const button=document.createElement('button');button.type='button';button.textContent=caption;
+        button.addEventListener('click',event=>{
+          event.stopPropagation();
+          show(next,reply);if(w.isConnected)bd.focus({preventScroll:true});
+        });
+        options.appendChild(button);
+      }
+      fit();
+    }
+    show('start');
+  },460);
+}
+function breakout(bd,w){
+  const cv=document.createElement('canvas');cv.width=300;cv.height=230;bd.appendChild(cv);
+  const c=cv.getContext('2d');
+  let px=125,ball,bricks,score,state;
+  function reset(){bricks=[];
+    for(let r=0;r<4;r++)for(let i=0;i<7;i++)
+      bricks.push({x:8+i*42,y:26+r*17,w:38,h:13,c:r%2?'#ffb454':'#7dffa0'});
+    score=0;sit();}
+  function sit(){state='wait';ball={x:px+25,y:208,vx:0,vy:0};}
+  function go(){
+    if(state==='wait'){state='run';
+      const a=-Math.PI/2.6-(Math.random()-.5)*.7;
+      ball.vx=Math.cos(a)*3.4;ball.vy=Math.sin(a)*3.4;}
+    else if(state==='over'){reset();}}
+  cv.addEventListener('mousemove',function(e){
+    const r=cv.getBoundingClientRect();px=Math.max(0,Math.min(250,e.clientX-r.left-25));});
+  cv.addEventListener('pointerdown',go);
+  reset();
+  (function frame(){
+    if(!cv.isConnected)return;
+    c.fillStyle='#08080d';c.fillRect(0,0,300,230);
+    bricks.forEach(function(b){c.fillStyle=b.c;c.fillRect(b.x,b.y,b.w,b.h);});
+    c.fillStyle='#c8d0c8';c.fillRect(px,214,50,6);
+    if(state==='wait'){ball.x=px+25;ball.y=208;}
+    if(state==='run'){
+      // 全程减速 15%，保留原来的反弹角度与操控手感。
+      ball.x+=ball.vx*.85;ball.y+=ball.vy*.85;
+      if(ball.x<4){ball.x=4;ball.vx*=-1;}
+      if(ball.x>296){ball.x=296;ball.vx*=-1;}
+      if(ball.y<4){ball.y=4;ball.vy*=-1;}
+      if(ball.y>214&&ball.y<224&&ball.x>px-4&&ball.x<px+54&&ball.vy>0){
+        ball.vy=-Math.abs(ball.vy);
+        ball.vx+=((ball.x-(px+25))/25)*1.6;
+        ball.vx=Math.max(-4,Math.min(4,ball.vx));blip();}
+      if(ball.y>234)state='over';
+      for(let i=bricks.length-1;i>=0;i--){const b=bricks[i];
+        if(ball.x>b.x-4&&ball.x<b.x+b.w+4&&ball.y>b.y-4&&ball.y<b.y+b.h+4){
+          bricks.splice(i,1);score+=10;ball.vy*=-1;blip();break;}}
+      if(!bricks.length)state='over';
+    }
+    c.fillStyle='#7dffa0';c.beginPath();c.arc(ball.x,ball.y,4,0,6.3);c.fill();
+    c.fillStyle='#8a8aa0';c.font='11px monospace';c.fillText('SCORE '+score,10,14);
+    if(state==='over'){
+      c.fillStyle=bricks.length?'#ff7a7a':'#7dffa0';c.font='15px monospace';
+      c.fillText(bricks.length?'GAME OVER — 点击重来':'CLEARED ★ 点击再来',58,120);}
+    if(state==='wait'){c.fillStyle='#8a8aa0';c.font='12px monospace';c.fillText('点击发射',126,150);}
+    requestAnimationFrame(frame);
+  })();
+}
+// ---------- 抓娃娃机 ----------
+// 关闭窗口会停止游戏与按键监听，已出货的桌面奖品独立保留。
+// 奖品直接由游戏画布绘制，整像素轮廓在移动和缩放时保持一致。
+function drawClawToy(c,type,px,py,angle=0,size=1){
+  const cream='#e6d6a4',ink='#171f18',muted='#9c9c70',green='#9fc375';
+  function rect(x,y,width,height,color){c.fillStyle=color;c.fillRect(Math.round(x),Math.round(y),width,height);}
+  c.save();c.translate(Math.round(px),Math.round(py));c.rotate(angle);c.scale(size,size);
+  if(type===0||type===1){
+    rect(-13,-9,26,23,ink);rect(-11,-8,22,20,cream);rect(-8,9,16,8,cream);
+    if(type===0){rect(-12,-17,7,12,cream);rect(5,-17,7,12,cream);rect(-10,-14,3,5,muted);rect(7,-14,3,5,muted);}
+    else{rect(-9,-25,6,20,cream);rect(3,-25,6,20,cream);rect(-7,-22,2,12,muted);rect(5,-22,2,12,muted);}
+    rect(-7,-2,3,3,ink);rect(4,-2,3,3,ink);rect(-1,3,2,2,ink);rect(-10,4,3,2,'#bca477');rect(7,4,3,2,'#bca477');
+  }else if(type===2){
+    rect(-14,0,26,14,muted);rect(-12,-2,23,14,'#dec783');rect(0,-15,15,16,cream);rect(12,-7,7,5,'#be915b');rect(8,-11,3,3,ink);
+  }else if(type===3){
+    rect(-17,-12,34,25,ink);rect(-15,-10,30,21,cream);rect(-12,-7,8,4,green);rect(-12,0,24,8,ink);rect(-9,2,5,4,cream);rect(5,2,5,4,cream);
+  }else if(type===4){
+    c.fillStyle=cream;c.beginPath();c.moveTo(0,-18);c.lineTo(5,-5);c.lineTo(18,-5);c.lineTo(9,4);c.lineTo(12,17);c.lineTo(0,10);c.lineTo(-12,17);c.lineTo(-9,4);c.lineTo(-18,-5);c.lineTo(-5,-5);c.closePath();c.fill();rect(-6,-2,3,3,ink);rect(4,-2,3,3,ink);
+  }else if(type===5){
+    rect(-12,-17,8,9,'#be915b');rect(4,-17,8,9,'#be915b');
+    rect(-10,-15,4,4,'#d8ac99');rect(6,-15,4,4,'#d8ac99');
+    rect(-14,-8,28,19,'#be915b');rect(-11,-11,22,25,'#be915b');
+    rect(-9,3,18,14,cream);rect(-14,2,7,8,cream);rect(7,2,7,8,cream);
+    rect(-7,-3,3,3,ink);rect(4,-3,3,3,ink);rect(-2,2,4,3,'#d8ac99');
+    rect(-2,6,4,3,ink);rect(-1,6,2,2,cream);
+  }else if(type===6){
+    rect(-10,-10,20,24,cream);rect(-9,9,18,8,cream);
+    rect(-15,-12,7,19,'#b18a60');rect(8,-12,7,19,'#b18a60');
+    rect(-8,-6,7,8,'#b18a60');rect(-6,-3,3,3,ink);rect(4,-3,3,3,ink);
+    rect(-6,2,12,9,'#dec783');rect(-2,2,4,3,ink);rect(-1,7,3,5,'#c58f7c');
+    rect(-8,12,16,3,green);rect(-1,14,3,3,'#be915b');
+  }else if(type===7){
+    rect(-16,-1,29,17,'#ad9066');rect(-12,-5,22,6,'#ad9066');
+    rect(1,-12,16,17,'#bca477');rect(11,-7,9,10,'#bca477');
+    rect(2,-16,5,6,'#ad9066');rect(11,-15,4,5,'#ad9066');
+    rect(8,-6,4,2,ink);rect(17,-3,2,2,ink);rect(12,4,7,1,'#806d4d');
+    rect(-12,12,5,6,'#927c57');rect(8,12,5,6,'#927c57');
+  }else if(type===8){
+    rect(-14,-6,28,20,cream);rect(-10,-11,20,25,cream);rect(-16,1,32,10,cream);
+    rect(-19,9,8,5,muted);rect(11,9,8,5,muted);rect(-11,12,22,5,cream);
+    rect(-7,-4,3,3,ink);rect(4,-4,3,3,ink);rect(-2,1,4,2,ink);
+    rect(-1,3,2,3,muted);rect(-11,2,5,1,muted);rect(6,2,5,1,muted);
+    rect(-12,5,5,1,muted);rect(7,5,5,1,muted);
+  }c.restore();
+}
+
+// 出货从当前窗口的真实出口坐标开始；奖品落到桌面后不随游戏关窗消失。
+function dropClawPrize(type,source){
+  const bounds=source.getBoundingClientRect(),scale=bounds.width/360;
+  const prize=document.createElement('canvas');prize.width=48;prize.height=72;
+  prize.className='desktop-prize';prize.setAttribute('role','img');
+  prize.setAttribute('aria-label',['小猫','小兔','鸭鸭','磁带','星星','小仓鼠','小狗','卡皮巴拉','小海豹'][type]+'奖品');
+  prize.dataset.state='falling';prize.dataset.type=type;
+  prize.style.width=48*scale+'px';prize.style.height=72*scale+'px';
+  prize.style.setProperty('--prize-width',48*scale+'px');
+  let px=bounds.left+47*scale-24*scale,py=bounds.top+280*scale-46*scale;
+  prize.style.setProperty('--prize-x',px+'px');prize.style.top=py+'px';
+  document.body.appendChild(prize);
+  const context=prize.getContext('2d');
+  let vx=((document.querySelectorAll('.desktop-prize').length%5)-2)*32,vy=0,last=performance.now();
+  let grounded=false,drag=null,raf=0,direction=type%2?1:-1;
+  let action='walk',actionTime=0,nextAction=2+Math.random()*3,target=null;
+  const animal=type<3||type>=5,walker=animal||type===3;
+  let rescued=false,speechUntil=0;
+  const bubble=animal?document.createElement('div'):null;
+  if(bubble){bubble.className='pet-speech';bubble.hidden=true;bubble.setAttribute('role','status');document.body.appendChild(bubble);}
+  function say(text){bubble.textContent=text;bubble.hidden=false;speechUntil=performance.now()+4200;}
+
+  function schedule(){cancelAnimationFrame(raf);raf=requestAnimationFrame(step);}
+  function musicTarget(event){
+    prize.style.pointerEvents='none';
+    const hit=document.elementFromPoint(event.clientX,event.clientY);
+    prize.style.pointerEvents='';
+    return hit?.closest('[data-app="music"],#w-music');
+  }
+  function clearTarget(){target?.classList.remove('tape-target');target=null;}
+  if(type===3||animal){
+    prize.dataset.draggable='true';prize.tabIndex=0;
+    prize.setAttribute('aria-label',type===3?'磁带奖品，拖到 MUSIC 打开对话，或按回车':['小猫','小兔','鸭鸭','磁带','星星','小仓鼠','小狗','卡皮巴拉','小海豹'][type]+'，可以拎起来');
+    prize.addEventListener('pointerdown',event=>{
+      if(event.button!==0)return;
+      event.preventDefault();event.stopPropagation();
+      drag={id:event.pointerId,x:event.clientX-px,y:event.clientY-py};
+      prize.setPointerCapture(event.pointerId);prize.dataset.state='dragging';
+      grounded=false;vx=0;vy=0;
+      if(animal)say(['喂！快放我下来！我自己会走！','啊啊啊别拎我！脚够不到地了！','嘎！放开本鸭！嘎嘎嘎！',null,null,'吱！我的瓜子要掉啦！','汪！先放下来，再摸摸嘛！','……我只是淡定，不是不会害怕。','呜！小鳍都拍累了！'][type]);
+      schedule();
+    });
+    prize.addEventListener('pointermove',event=>{
+      if(!drag||event.pointerId!==drag.id)return;
+      px=Math.max(0,Math.min(innerWidth-48*scale,event.clientX-drag.x));
+      py=Math.max(40,Math.min(innerHeight-72*scale-8,event.clientY-drag.y));
+      clearTarget();if(type===3){target=musicTarget(event);target?.classList.add('tape-target');}
+    });
+    function release(event){
+      if(!drag||event.pointerId!==drag.id)return;
+      const accepted=event.type==='pointerup'&&type===3&&musicTarget(event);
+      drag=null;clearTarget();prize.dataset.state='falling';
+      if(accepted){openTapeRecording();prize.remove();cancelAnimationFrame(raf);}
+      else schedule();
+    }
+    prize.addEventListener('pointerup',release);prize.addEventListener('pointercancel',release);
+    prize.addEventListener('lostpointercapture',release);
+    prize.addEventListener('keydown',event=>{
+      if(type===3&&event.key==='Enter'){event.preventDefault();openTapeRecording();prize.remove();cancelAnimationFrame(raf);}
+    });
+  }
+  function step(now){
+    if(!prize.isConnected){bubble?.remove();return;}
+    const dt=Math.min((now-last)/1000,.04);last=now;
+    const floor=innerHeight-72*scale-8;
+    let bounce=0,angle=0;
+    if(!drag&&!grounded){
+      vy+=700*dt;px+=vx*dt;py+=vy*dt;
+      if(py>=floor){py=floor;vy=-Math.abs(vy)*.24;vx*=.4;if(Math.abs(vy)<24)grounded=true;}
+      angle=Math.sin(now/140)*.12;
+    }else if(grounded){
+      py=floor;
+      if(walker){
+        actionTime+=dt;
+        if(actionTime>nextAction){
+          action=action==='walk'?['look','hop','rest'][Math.floor(Math.random()*3)]:'walk';
+          actionTime=0;nextAction=action==='walk'?3+Math.random()*4:1.2+Math.random()*1.5;
+          if(action==='walk'&&Math.random()<.5)direction*=-1;
+        }
+        if(action==='walk'){
+          px+=direction*(type===7?13:type===8?18:type===2?22:28)*dt;
+          if(px<=0||px>=innerWidth-48*scale)direction*=-1;
+          bounce=Math.abs(Math.sin(actionTime*(type===8?5:type===7?6:type===1?8:11)))*(type===8?3:type===7?1:type===1?5:2);
+          angle=Math.sin(actionTime*11)*.045;
+        }else if(action==='hop')bounce=Math.abs(Math.sin(actionTime*5))*9;
+        else if(action==='look')angle=Math.sin(actionTime*3)*.13;
+        prize.dataset.action=action;
+      }
+    }
+    if(animal&&grounded&&!rescued){
+      rescued=true;action='rest';actionTime=0;nextAction=4.2;
+      say(['谢啦。终于不用在玻璃里面装可爱了。','你真的把我救出来啦！外面好大呀。','嘎！救命恩人！我先去那边溜达一圈。',null,null,'谢谢你！我分你一颗藏好的瓜子。','汪！谢谢你接我出来，我跟你走啦！','谢谢。这里适合发呆，我就待这儿了。','谢谢你！我滚过来陪你啦。'][type]);
+    }
+    if(bubble){
+      if(drag&&performance.now()>speechUntil)say(['快放开我！尾巴都要吓直了！','放我下去嘛！求你啦！','嘎嘎嘎！本鸭抗议！',null,null,'吱吱！我真的没有藏更多瓜子！','汪呜！脚脚已经跑累了！','可以放我回去发呆了吗。','呜呜！我想贴着地面！'][type]);
+      bubble.hidden=performance.now()>speechUntil;
+      bubble.style.left=Math.max(8,Math.min(innerWidth-bubble.offsetWidth-8,px+24*scale-bubble.offsetWidth/2))+'px';
+      let top=Math.max(44,py+12*scale-bubble.offsetHeight-8);
+      const left=parseFloat(bubble.style.left),width=bubble.offsetWidth,height=bubble.offsetHeight;
+      for(const other of document.querySelectorAll('.pet-speech')){
+        if(other===bubble)break;
+        if(other.hidden)continue;
+        const r=other.getBoundingClientRect();
+        if(left<r.right+8&&left+width>r.left-8&&top<r.bottom+8&&top+height>r.top-8)top=Math.max(44,r.top-height-14);
+      }
+      bubble.style.top=top+'px';
+    }
+    if(drag&&animal)angle=Math.sin(now/45)*.09;
+    px=Math.max(0,Math.min(innerWidth-48*scale,px));
+    prize.style.setProperty('--prize-x',px+'px');prize.style.top=py+'px';
+    context.clearRect(0,0,48,72);
+    context.save();
+    if(walker&&direction<0){context.translate(48,0);context.scale(-1,1);}
+    drawClawToy(context,type,24,46-bounce,angle);
+    // 散步时露出交替的小脚，停下时偶尔眯眼。
+    if(type===8&&walker){
+      const flap=drag?Math.sin(now/38)*5:Math.sin(actionTime*5)*2;
+      context.fillStyle='#9c9c70';context.fillRect(5,55-bounce+flap,7,3);context.fillRect(36,55-bounce-flap,7,3);
+    }else if(animal&&drag){
+      context.strokeStyle='#e6d6a4';context.lineWidth=3;
+      for(const side of [-1,1]){
+        const panic=Math.sin(now/38+side*2);
+        context.beginPath();context.moveTo(24+side*7,59);context.lineTo(24+side*(10+panic*5),64);context.lineTo(24+side*10+panic*8,69);context.stroke();
+      }
+    }else if(walker&&grounded){
+      context.fillStyle='#e6d6a4';
+      if(action==='walk'){
+        const stride=Math.sin(actionTime*11)*3;
+        context.fillRect(15+stride,62-bounce,6,3);context.fillRect(27-stride,62-bounce,6,3);
+      }else if(action==='rest'&&(type<2||type===5||type===6)){
+        context.fillRect(16,43,6,5);context.fillRect(27,43,6,5);
+        context.fillStyle='#171f18';context.fillRect(17,46,3,1);context.fillRect(28,46,3,1);
+      }
+    }
+    context.restore();
+    prize.dataset.state=drag?'dragging':grounded?'resting':'falling';
+    if(!grounded||walker||drag)raf=requestAnimationFrame(step);
+  }
+  schedule();
+}
+function clawMachine(bd,w){
+  bd.classList.add('claw-game');
+  bd.innerHTML='<canvas class="claw-stage" width="360" height="320" tabindex="0" aria-label="抓娃娃机，左右方向键移动，空格抓取"></canvas>'+
+    '<div class="claw-message" role="status" aria-live="polite">我们的抓娃娃机绝不存在暗箱操作！</div>'+
+    '<div class="claw-controls"><kbd aria-label="键盘左方向键">←</kbd><button type="button" data-claw="grab">抓一下</button><kbd aria-label="键盘右方向键">→</kbd></div>';
+  const cv=bd.querySelector('canvas'),c=cv.getContext('2d');
+  const message=bd.querySelector('.claw-message'),grab=bd.querySelector('[data-claw="grab"]');
+  const names=['小猫','小兔','鸭鸭','磁带','星星','小仓鼠','小狗','卡皮巴拉','小海豹'];
+  const cream='#e6d6a4',ink='#171f18',muted='#9c9c70',green='#9fc375';
+  let prizes=[],state='aim',phase=0,clock=0,x=178,y=65,aim=178,held=null,loose=null,grip=0;
+  const slipChance=.15; // 抓稳后每次只抽签一次，避免概率随帧率变化。
+  let randomSlip=false;
+  let chosen=null,offset=0,attempts=0,last=performance.now(),raf=0,keys=new Set();
+  function stock(){
+    const places=[[100,252],[148,252],[216,168],[196,252],[258,210],[184,210],[124,210],[244,252],[292,252]];
+    prizes=places.map(([x,y],type)=>({type,x,y}));
+  }
+  function enter(next){state=next;phase=0;w.dataset.clawState=state;}
+  function finish(){
+    held=null;chosen=null;grip=0;aim=x;enter('aim');grab.disabled=false;
+    grab.textContent=prizes.length?'再抓一次':'再来一机';
+  }
+  function start(){
+    if(state!=='aim')return;
+    if(!prizes.length){stock();message.textContent='已补货';grab.textContent='抓一下';return;}
+    x=aim+Math.sin(clock*2.8)*5;
+    const beneath=prizes.filter(p=>Math.abs(p.x-x)<=25);
+    chosen=beneath.length?beneath.reduce((best,p)=>p.y<best.y?p:best):prizes.reduce((best,p)=>Math.abs(p.x-x)<Math.abs(best.x-x)?p:best);
+    offset=Math.abs(chosen.x-x);randomSlip=false;attempts++;keys.clear();
+    // 瞄准磁带下爪时只判定一次躲闪，左右各占一半；下降期间平滑挪动。
+    if(chosen.type===3&&offset<=18&&Math.random()<.5){
+      chosen.dodgeX=Math.max(82,Math.min(300,chosen.x+(Math.random()<.5?-12:12)));
+    }
+    grab.disabled=true;
+    message.textContent='';enter('lower');
+  }
+  cv.addEventListener('pointerdown',()=>cv.focus({preventScroll:true}));
+  grab.addEventListener('click',start);
+  function isFront(){return ![...document.querySelectorAll('.win')].some(other=>+other.style.zIndex>+w.style.zIndex);}
+  function keyDown(event){
+    if(!isFront()||!['ArrowLeft','ArrowRight',' '].includes(event.key))return;
+    event.preventDefault();if(event.key===' '){if(!event.repeat)start();}else keys.add(event.key);
+  }
+  function keyUp(event){keys.delete(event.key);}
+  function blur(){keys.clear();}
+  addEventListener('keydown',keyDown);addEventListener('keyup',keyUp);addEventListener('blur',blur);
+  function rect(px,py,width,height,color){c.fillStyle=color;c.fillRect(Math.round(px),Math.round(py),width,height);}
+  function text(value,px,py,color=cream,size=10){c.fillStyle=color;c.font=`${size}px "Courier New",monospace`;c.fillText(value,px,py);}
+  function draw(){
+    rect(0,0,360,320,ink);rect(7,7,346,306,cream);rect(11,11,338,298,ink);
+    // 上方招牌和玻璃机舱。
+    rect(14,14,332,30,muted);rect(17,17,326,24,cream);text('POCKET ARCADE',28,33,ink,13);text('CLAW / 01',250,32,ink,10);
+    rect(20,48,320,226,'#202d23');
+    for(let gx=28;gx<340;gx+=12)for(let gy=58;gy<265;gy+=12)rect(gx,gy,1,1,'#344235');
+    rect(26,50,308,5,muted);rect(26,55,308,2,ink);
+    rect(27,66,2,182,'#647455');rect(31,66,1,182,'#3c503b');rect(331,66,2,182,'#647455');
+    // 出口留在左侧，奖品排在右侧。
+    rect(25,248,42,53,'#0c130f');rect(23,246,46,3,muted);rect(23,246,3,57,muted);rect(66,246,3,57,muted);
+    rect(76,278,257,5,muted);rect(76,283,257,3,ink);
+    [...prizes].sort((a,b)=>a.y-b.y).forEach(p=>{if(p!==held&&p!==loose)drawClawToy(c,p.type,p.x,p.y,0,1.4);});
+    if(loose)drawClawToy(c,loose.type,loose.x,loose.y,Math.sin(phase*6)*.14,1.4);
+    const sway=held?Math.sin(clock*5)*.08:0;
+    if(held)drawClawToy(c,held.type,x,y+32,sway,1.4);
+    rect(x-1,57,2,Math.max(0,y-60),muted);rect(x-9,51,18,9,cream);rect(x-5,53,10,3,green);
+    rect(x-7,y-3,14,9,cream);
+    const spread=25-grip*13;
+    c.strokeStyle=cream;c.lineWidth=4;c.lineJoin='miter';
+    for(const side of [-1,1]){c.beginPath();c.moveTo(x+side*3,y+2);c.lineTo(x+side*spread,y+20);c.lineTo(x+side*(spread-5),y+35);c.lineTo(x+side*(spread-12),y+37);c.stroke();}
+    rect(77,289,255,16,'#303c2c');text('TRY '+String(attempts).padStart(2,'0'),86,300);
+    text('OUT',34,299,muted,9);
+    if(state==='celebrate'){for(let i=0;i<12;i++){const t=i*2.4;rect(47+Math.cos(t)*phase*36,276+Math.sin(t)*phase*25,3,3,i%2?cream:green);}}
+  }
+  function step(now){
+    if(!cv.isConnected)return;
+    const dt=Math.min((now-last)/1000,.04);last=now;clock+=dt;phase+=dt;
+    if(state==='aim'){
+      const direction=(keys.has('ArrowRight')?1:0)-(keys.has('ArrowLeft')?1:0);
+      aim=Math.max(78,Math.min(300,aim+direction*95*dt));x=aim+Math.sin(clock*2.8)*5;y=65;
+    }else if(state==='lower'){
+      if(chosen.dodgeX!==undefined){
+        const delta=chosen.dodgeX-chosen.x;chosen.x+=Math.sign(delta)*Math.min(Math.abs(delta),60*dt);
+        if(Math.abs(delta)<.1)delete chosen.dodgeX;
+      }
+      y=Math.min(chosen.y-32,y+116*dt);if(y>=chosen.y-32)enter('grip');
+    }else if(state==='grip'){
+      grip=Math.min(1,phase/.4);
+      if(phase>=.4){
+        offset=Math.abs(chosen.x-x);
+        if(offset<=18){held=chosen;randomSlip=chosen.type===3?Math.random()<.5:offset<=10&&Math.random()<slipChance;message.textContent=offset<=10?'':'有点偏哦';}
+        else message.textContent='啧';
+        enter('raise');
+      }
+    }else if(state==='raise'){
+      y=Math.max(65,y-100*dt);
+      if(held&&((held.type!==3&&offset>10)||randomSlip)&&y<175){loose=held;loose.x=Math.max(82,Math.min(300,x));loose.y=y+32;loose.vy=0;held=null;message.textContent='你懂的，爪子有时候会手滑是很合理的';}
+      if(y<=65){if(held)enter('return');else finish();}
+    }else if(state==='return'){
+      x=Math.max(47,x-112*dt);if(x<=47)enter('release');
+    }else if(state==='release'){
+      grip=Math.max(0,1-phase/.25);
+      if(phase>=.25){loose=held;held=null;loose.x=47;loose.y=y+32;loose.vy=0;prizes=prizes.filter(p=>p!==loose);enter('drop');}
+    }else if(state==='celebrate'&&phase>.85){finish();}
+    // 按从下到上的顺序落回堆面，抽走下面的娃娃后上层也会落下。
+    const settled=[];
+    for(const p of [...prizes].filter(p=>p!==held&&p!==loose).sort((a,b)=>b.y-a.y)){
+      let floor=252;
+      for(const below of settled)if(Math.abs(below.x-p.x)<38)floor=Math.min(floor,below.y-42);
+      if(p!==chosen||state==='aim'||state==='celebrate')p.y=Math.min(floor,p.y+100*dt);
+      settled.push(p);
+    }
+    if(loose){
+      loose.vy+=500*dt;loose.y+=loose.vy*dt;
+      const floor=state==='drop'?280:prizes.filter(p=>p!==loose&&Math.abs(p.x-loose.x)<38).reduce((floor,p)=>Math.min(floor,p.y-42),252);
+      if(loose.y>=floor){
+        loose.y=floor;
+        if(state==='drop'){
+          dropClawPrize(loose.type,cv);
+          message.textContent=prizes.length?`抓到${names[loose.type]}啦！`:'整机抓空！太厉害了！';
+          enter('celebrate');
+        }
+        loose=null;
+      }
+    }
+    draw();raf=requestAnimationFrame(step);
+  }
+  w._cleanup=()=>{cancelAnimationFrame(raf);removeEventListener('keydown',keyDown);removeEventListener('keyup',keyUp);removeEventListener('blur',blur);};
+  stock();enter('aim');raf=requestAnimationFrame(step);
+  // 新游戏窗口初次打开时完整留在可视区域，之后仍可自由拖动。
+  w.style.top=Math.max(42,Math.min(w.offsetTop,innerHeight-w.offsetHeight-8))+'px';
+}
+
+function launch(app){
+  if(app==='music')openWin('music','MUSIC.EXE — 循环机',music);
+  else if(app==='breakout')openWin('breakout','BREAKOUT.EXE',breakout);
+  else if(app==='claw')openWin('claw','CLAW.EXE — 抓娃娃',clawMachine,390);
+  else if(app==='readme')openWin('readme','README.TXT',readme,340);
+  else if(app==='contact')openWin('contact','CONTACT.EXE — 建立连接',contact,310);
+}
+document.querySelectorAll('.icon').forEach(function(ic){
+  ic.addEventListener('click',function(){launch(ic.dataset.app);});
+  ic.addEventListener('keydown',function(event){
+    if(event.key==='Enter'||event.key===' '){event.preventDefault();launch(ic.dataset.app);}
+  });
+});
+
+// 顶栏菜单共用一个提示窗口，重复点击只将已有窗口置前。
+document.querySelectorAll('.system-menu,.menu-apple').forEach(function(menu){
+  function showNotice(){openWin('menu-notice','提示',function(body){body.textContent='还没做呢';},300);}
+  menu.addEventListener('click',showNotice);
+  menu.addEventListener('keydown',function(event){
+    if(event.key==='Enter'||event.key===' '){event.preventDefault();showNotice();}
+  });
+});
+
+</script>
+</body>
+</html>
