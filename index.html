@@ -586,32 +586,32 @@ scene.add(lampAreaLight);
 // 坐标以 workstation_cabinet_v1 的真实桌面顶面 y=.7625m 为准；+Z 为桌面前方。
 const DESK_TOP_Y=.763;
 const ASSET_LAYOUT=[
-  {key:'cabinet',url:'models/workstation_cabinet_v1.glb?v=cabinet-lock-20260828-r2',derived:'models/baked-gi-proof/workstation_cabinet_uv2.glb?v=handle-panel-uv-islands-20260829',lightmap:'models/baked-gi-proof/workstation_cabinet_full_diffuse.png?v=handle-panel-uv-islands-20260829',nodeLightmaps:{wc_drawer_center_inset:'models/baked-gi-proof/workstation_cabinet_wc_drawer_center_inset_full_diffuse.png?v=handle-panel-uv-islands-20260829',wc_left_lower_door_inset:'models/baked-gi-proof/workstation_cabinet_wc_left_lower_door_inset_full_diffuse.png?v=handle-panel-uv-islands-20260829',wc_left_upper_door_inset:'models/baked-gi-proof/workstation_cabinet_wc_left_upper_door_inset_full_diffuse.png?v=handle-panel-uv-islands-20260829',wc_desk_top:'models/baked-gi-proof/workstation_cabinet_wc_desk_top_full_diffuse.png?v=handle-panel-uv-islands-20260829'},pos:[0,0,0],scale:1,ry:0},
-  {key:'legion',url:'models/monitor_legion_v3.glb',derived:'models/baked-gi-proof/monitor_legion_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/monitor_legion_full_diffuse.png?v=unified-cabinet-lock-20260828-r2',pos:[-.075,.755,-.095],scale:1.1,ry:0},
-  {key:'skyworth',url:'models/monitor_skyworth_v3.glb',derived:'models/baked-gi-proof/monitor_skyworth_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/monitor_skyworth_full_diffuse.png?v=unified-cabinet-lock-20260828-r2',pos:[.42,.765,.06],scale:1,ry:-1.204},
-  {key:'keyboard',url:'models/keyboard_v3.glb?v=legends-20260824',derived:'models/baked-gi-proof/keyboard_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/keyboard_full_diffuse.png?v=unified-cabinet-lock-20260828-r2',pos:[-.285,.775,.055],scale:1.12,ry:.02},
-  {key:'mousepad',url:'models/mousepad_shortcuts_v1.glb',derived:'models/baked-gi-proof/mousepad_shortcuts_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/mousepad_shortcuts_full_diffuse.png?v=unified-cabinet-lock-20260828-r2',pos:[.32,.763,.175],scale:1,ry:-.03},
-  {key:'mouse',url:'models/mouse_legion_v1.glb',derived:'models/baked-gi-proof/mouse_legion_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/mouse_legion_full_diffuse.png?v=unified-cabinet-lock-20260828-r2',pos:[.305,.765,.185],scale:1,ry:3.142},
-  {key:'lamp',url:'models/lamp_v4.glb',derived:'models/baked-gi-proof/lamp_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/lamp_full_diffuse.png?v=unified-cabinet-lock-20260828-r2',pos:[.375,.755,-.17],scale:1.42,ry:-.524},
-  {key:'mug',url:'models/glass_mug_fuguang_v1.glb',derived:'models/baked-gi-proof/glass_mug_fuguang_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/glass_mug_fuguang_full_diffuse.png?v=unified-cabinet-lock-20260828-r2',pos:[-.38,.763,.015],scale:1,ry:.279},
+  {key:'cabinet',url:'models/published/workstation_cabinet_uv2.glb',derived:'models/published/workstation_cabinet_uv2.glb',lightmap:'models/baked-gi-proof/workstation_cabinet_full_diffuse.png?v=handle-panel-uv-islands-20260829',nodeLightmaps:{wc_drawer_center_inset:'models/baked-gi-proof/workstation_cabinet_wc_drawer_center_inset_full_diffuse.png?v=handle-panel-uv-islands-20260829',wc_left_lower_door_inset:'models/baked-gi-proof/workstation_cabinet_wc_left_lower_door_inset_full_diffuse.png?v=handle-panel-uv-islands-20260829',wc_left_upper_door_inset:'models/baked-gi-proof/workstation_cabinet_wc_left_upper_door_inset_full_diffuse.png?v=handle-panel-uv-islands-20260829',wc_desk_top:'models/baked-gi-proof/workstation_cabinet_wc_desk_top_full_diffuse.png?v=handle-panel-uv-islands-20260829'},pos:[0,0,0],scale:1,ry:0},
+  {key:'legion',url:'models/published/monitor_legion_uv2.glb',derived:'models/published/monitor_legion_uv2.glb',lightmap:'models/baked-gi-proof/monitor_legion_full_diffuse.png?v=unified-cabinet-lock-20260828-r2',pos:[-.075,.755,-.095],scale:1.1,ry:0},
+  {key:'skyworth',url:'models/published/monitor_skyworth_uv2.glb',derived:'models/published/monitor_skyworth_uv2.glb',lightmap:'models/baked-gi-proof/monitor_skyworth_full_diffuse.png?v=unified-cabinet-lock-20260828-r2',pos:[.42,.765,.06],scale:1,ry:-1.204},
+  {key:'keyboard',url:'models/published/keyboard_uv2.glb',derived:'models/published/keyboard_uv2.glb',lightmap:'models/baked-gi-proof/keyboard_full_diffuse.png?v=unified-cabinet-lock-20260828-r2',pos:[-.285,.775,.055],scale:1.12,ry:.02},
+  {key:'mousepad',url:'models/published/mousepad_shortcuts_uv2.glb',derived:'models/published/mousepad_shortcuts_uv2.glb',lightmap:'models/baked-gi-proof/mousepad_shortcuts_full_diffuse.png?v=unified-cabinet-lock-20260828-r2',pos:[.32,.763,.175],scale:1,ry:-.03},
+  {key:'mouse',url:'models/published/mouse_legion_uv2.glb',derived:'models/published/mouse_legion_uv2.glb',lightmap:'models/baked-gi-proof/mouse_legion_full_diffuse.png?v=unified-cabinet-lock-20260828-r2',pos:[.305,.765,.185],scale:1,ry:3.142},
+  {key:'lamp',url:'models/published/lamp_uv2.glb',derived:'models/published/lamp_uv2.glb',lightmap:'models/baked-gi-proof/lamp_full_diffuse.png?v=unified-cabinet-lock-20260828-r2',pos:[.375,.755,-.17],scale:1.42,ry:-.524},
+  {key:'mug',url:'models/published/glass_mug_fuguang_uv2.glb',derived:'models/published/glass_mug_fuguang_uv2.glb',lightmap:'models/baked-gi-proof/glass_mug_fuguang_full_diffuse.png?v=unified-cabinet-lock-20260828-r2',pos:[-.38,.763,.015],scale:1,ry:.279},
   // 杯子在后（z=.015），麦克风底座在其前方（z=.195）。
-  {key:'microphone',url:'models/desktop_microphone_v1.glb',derived:'models/baked-gi-proof/desktop_microphone_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/desktop_microphone_full_diffuse.png?v=unified-cabinet-lock-20260828-r2',pos:[-.36,.763,.195],scale:.68,ry:.541},
-  {key:'laptop',url:'models/laptop_legion_v1.glb',derived:'models/baked-gi-proof/laptop_legion_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/laptop_legion_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
-  {key:'laptop_stand',url:'models/laptop_stand_v1.glb?v=soft-metal-20260825',derived:'models/baked-gi-proof/laptop_stand_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/laptop_stand_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
-  {key:'mac_mini',url:'models/mac_mini_m4_v1.glb',derived:'models/baked-gi-proof/mac_mini_m4_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/mac_mini_m4_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
-  {key:'wet_wipes',url:'models/wet_wipes_v1.glb?v=horizontal-20260824',derived:'models/baked-gi-proof/wet_wipes_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/wet_wipes_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
-  {key:'storage_box',url:'models/storage_box_v1.glb?v=parameterized-20260824',derived:'models/baked-gi-proof/storage_box_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/storage_box_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
-  {key:'pechoin',url:'models/pechoin_v1.glb?v=parameterized-20260824',derived:'models/baked-gi-proof/pechoin_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/pechoin_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
-  {key:'kettle',url:'models/kettle_v1.glb?v=parameterized-20260824',derived:'models/baked-gi-proof/kettle_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/kettle_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
-  {key:'tape',url:'models/tape_v1.glb?v=parameterized-20260824',derived:'models/baked-gi-proof/tape_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/tape_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
-  {key:'aloe_gel',url:'models/aloe_gel_v1.glb?v=parameterized-20260824',derived:'models/baked-gi-proof/aloe_gel_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/aloe_gel_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
-  {key:'hand_model',url:'models/hand_model_v1.glb?v=parameterized-20260824',derived:'models/baked-gi-proof/hand_model_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/hand_model_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
-  {key:'hand_cream',url:'models/hand_cream_v1.glb?v=parameterized-20260824',derived:'models/baked-gi-proof/hand_cream_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/hand_cream_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
-  {key:'vitamins',url:'models/vitamins_v1.glb?v=parameterized-20260824',derived:'models/baked-gi-proof/vitamins_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/vitamins_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
-  {key:'book',url:'models/book_v1.glb?v=parameterized-20260824',derived:'models/baked-gi-proof/book_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/book_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
-  {key:'toothbrush_cup',url:'models/toothbrush_cup_v1.glb?v=parameterized-20260824',derived:'models/baked-gi-proof/toothbrush_cup_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/toothbrush_cup_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
-  {key:'tissue_box',url:'models/tissue_box_v1.glb?v=parameterized-20260824',derived:'models/baked-gi-proof/tissue_box_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/tissue_box_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
-  {key:'hand_wash',url:'models/hand_wash_v1.glb?v=parameterized-20260824',derived:'models/baked-gi-proof/hand_wash_uv2.glb?v=unified-20260825-stand-v4',lightmap:'models/baked-gi-proof/hand_wash_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'}
+  {key:'microphone',url:'models/published/desktop_microphone_uv2.glb',derived:'models/published/desktop_microphone_uv2.glb',lightmap:'models/baked-gi-proof/desktop_microphone_full_diffuse.png?v=unified-cabinet-lock-20260828-r2',pos:[-.36,.763,.195],scale:.68,ry:.541},
+  {key:'laptop',url:'models/published/laptop_legion_uv2.glb',derived:'models/published/laptop_legion_uv2.glb',lightmap:'models/baked-gi-proof/laptop_legion_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
+  {key:'laptop_stand',url:'models/published/laptop_stand_uv2.glb',derived:'models/published/laptop_stand_uv2.glb',lightmap:'models/baked-gi-proof/laptop_stand_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
+  {key:'mac_mini',url:'models/published/mac_mini_m4_uv2.glb',derived:'models/published/mac_mini_m4_uv2.glb',lightmap:'models/baked-gi-proof/mac_mini_m4_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
+  {key:'wet_wipes',url:'models/published/wet_wipes_uv2.glb',derived:'models/published/wet_wipes_uv2.glb',lightmap:'models/baked-gi-proof/wet_wipes_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
+  {key:'storage_box',url:'models/published/storage_box_uv2.glb',derived:'models/published/storage_box_uv2.glb',lightmap:'models/baked-gi-proof/storage_box_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
+  {key:'pechoin',url:'models/published/pechoin_uv2.glb',derived:'models/published/pechoin_uv2.glb',lightmap:'models/baked-gi-proof/pechoin_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
+  {key:'kettle',url:'models/published/kettle_uv2.glb',derived:'models/published/kettle_uv2.glb',lightmap:'models/baked-gi-proof/kettle_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
+  {key:'tape',url:'models/published/tape_uv2.glb',derived:'models/published/tape_uv2.glb',lightmap:'models/baked-gi-proof/tape_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
+  {key:'aloe_gel',url:'models/published/aloe_gel_uv2.glb',derived:'models/published/aloe_gel_uv2.glb',lightmap:'models/baked-gi-proof/aloe_gel_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
+  {key:'hand_model',url:'models/published/hand_model_uv2.glb',derived:'models/published/hand_model_uv2.glb',lightmap:'models/baked-gi-proof/hand_model_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
+  {key:'hand_cream',url:'models/published/hand_cream_uv2.glb',derived:'models/published/hand_cream_uv2.glb',lightmap:'models/baked-gi-proof/hand_cream_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
+  {key:'vitamins',url:'models/published/vitamins_uv2.glb',derived:'models/published/vitamins_uv2.glb',lightmap:'models/baked-gi-proof/vitamins_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
+  {key:'book',url:'models/published/book_uv2.glb',derived:'models/published/book_uv2.glb',lightmap:'models/baked-gi-proof/book_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
+  {key:'toothbrush_cup',url:'models/published/toothbrush_cup_uv2.glb',derived:'models/published/toothbrush_cup_uv2.glb',lightmap:'models/baked-gi-proof/toothbrush_cup_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
+  {key:'tissue_box',url:'models/published/tissue_box_uv2.glb',derived:'models/published/tissue_box_uv2.glb',lightmap:'models/baked-gi-proof/tissue_box_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'},
+  {key:'hand_wash',url:'models/published/hand_wash_uv2.glb',derived:'models/published/hand_wash_uv2.glb',lightmap:'models/baked-gi-proof/hand_wash_full_diffuse.png?v=unified-cabinet-lock-20260828-r2'}
 ];
 const CORE_ASSET_KEYS=new Set([
   'cabinet','legion','skyworth','keyboard','mousepad','mouse','lamp','mug','microphone'
@@ -986,13 +986,31 @@ function withAssetTimeout(promise,url){
   });
   return Promise.race([promise,timeout]).finally(()=>clearTimeout(timer));
 }
-function loadGLTF(url){
-  const requestUrl=revisionedAssetUrl(url);
-  return withAssetTimeout(new Promise((resolve,reject)=>gltfLoader.load(requestUrl,resolve,undefined,reject)),requestUrl);
+// 网络提前并行传输；到分批装配时才解码，避免下载也跟着预热排队。
+const assetDownloads=new Map();
+function downloadAsset(url){
+  if(!assetDownloads.has(url)){
+    const requestUrl=revisionedAssetUrl(url);
+    const job=fetch(requestUrl,{signal:AbortSignal.timeout(60000)}).then(response=>{
+      if(!response.ok)throw new Error(`资源加载失败：${response.status} ${url}`);
+      return response.blob();
+    });
+    job.catch(()=>{}); // 预取失败交给实际消费处统一显示加载错误。
+    assetDownloads.set(url,job);
+  }
+  return assetDownloads.get(url);
 }
-function loadLightmap(url){
-  const requestUrl=revisionedAssetUrl(url);
-  return withAssetTimeout(new Promise((resolve,reject)=>lightmapTextureLoader.load(requestUrl,resolve,undefined,reject)),requestUrl);
+async function loadGLTF(url){
+  const data=await downloadAsset(url);
+  const result=await withAssetTimeout(gltfLoader.parseAsync(await data.arrayBuffer(),new URL('.',new URL(url,location.href)).href),url);
+  assetDownloads.delete(url);
+  return result;
+}
+async function loadLightmap(url){
+  const data=await downloadAsset(url);
+  const objectUrl=URL.createObjectURL(data);
+  try{return await withAssetTimeout(lightmapTextureLoader.loadAsync(objectUrl),url);}
+  finally{URL.revokeObjectURL(objectUrl);assetDownloads.delete(url);}
 }
 function applyAssetTransform(asset,spec){
   asset.name='asset_'+spec.key;asset.position.set(...spec.pos);asset.scale.setScalar(spec.scale||1);
@@ -1228,16 +1246,18 @@ function splitLockReceiverLightmapSurfaces(asset){
 async function loadAsset(spec){
   if(!spec.derived||!spec.lightmap)return loadSourceAsset(spec);
   const nodeLightmapEntries=Object.entries(spec.nodeLightmaps||{});
+  const geometryPromise=loadGLTF(spec.derived);
   const [derivedGLTF,sourceGLTF,lightmap,...nodeLightmapTextures]=await Promise.all([
-    loadGLTF(spec.derived),loadGLTF(spec.url),loadLightmap(spec.lightmap),
+    geometryPromise,spec.url===spec.derived?geometryPromise:loadGLTF(spec.url),loadLightmap(spec.lightmap),
     ...nodeLightmapEntries.map(([,url])=>loadLightmap(url))
     ]);
     const asset=derivedGLTF.scene;
-    if(spec.key==='cabinet')splitLockReceiverLightmapSurfaces(asset);
+
     const sourceMaterials=new Map();
     const runtimeMaterials=new Map();
     const nodeLightmaps=new Map(nodeLightmapEntries.map(([name],index)=>[name,nodeLightmapTextures[index]]));
     sourceGLTF.scene.traverse(node=>{if(node.isMesh)sourceMaterials.set(node.name,node.material);});
+    if(spec.key==='cabinet')splitLockReceiverLightmapSurfaces(asset);
     // Cycles 输出的是线性照度数据；关闭 mipmap 避免 UV 岛在远处与黑底互相混色。
     for(const texture of [lightmap,...nodeLightmapTextures]){
       texture.colorSpace=THREE.NoColorSpace;texture.flipY=false;texture.channel=1;
@@ -1484,6 +1504,10 @@ async function loadFormalScene(){
     await nextPaint();
 
     const mugReflectionTexturePromise=debugParams.has('captureMugProbe')?null:loadMugReflectionTexture();
+    for(const spec of ASSET_LAYOUT){
+      for(const url of new Set([spec.url,spec.derived,spec.lightmap,...Object.values(spec.nodeLightmaps||{})].filter(Boolean)))downloadAsset(url);
+    }
+    mugReflectionTexturePromise?.catch(()=>{});
     const coreAssets=ASSET_LAYOUT.filter(spec=>CORE_ASSET_KEYS.has(spec.key));
     const progressiveAssets=ASSET_LAYOUT.filter(spec=>!CORE_ASSET_KEYS.has(spec.key));
     await Promise.all(coreAssets.map(loadTrackedAsset));
